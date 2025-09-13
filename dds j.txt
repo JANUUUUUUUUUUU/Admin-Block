@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>College Fees Structure</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    padding: 30px;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  form {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 400px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+  }
+  input, select {
+    width: 100%;
+    padding: 10px 8px;
+    margin-top: 5px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  button {
+    margin-top: 25px;
+    width: 100%;
+    padding: 12px;
+    background: #27ae60;
+    border: none;
+    color: white;
+    font-size: 18px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #219150;
+  }
+  .fees-container {
+    max-width: 600px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    padding: 25px;
+  }
+  .fee-row {
+    display: flex;
+    justify-content: space-between;
+    background-color: #3498db;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 7px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .fee-row.tuition { background-color: #2980b9; }
+  .fee-row.hostel { background-color: #8e44ad; }
+  .fee-row.transport { background-color: #d35400; }
+  .fee-row.misc { background-color: #16a085; }
+  .fee-row.total { background-color: #27ae60; font-size: 20px; }
+</style>
+</head>
+<body>
+
+<h1>College Fees Registration</h1>
+
+<form id="studentForm">
+  <label for="studentName">Student Name:</label>
+  <input type="text" id="studentName" required />
+
+  <label for="course">Select Course:</label>
+  <select id="course" required>
+    <option value="" disabled selected>Choose Course</option>
+    <option value="btech">B.Tech</option>
+    <option value="mba">MBA</option>
+    <option value="mca">MCA</option>
+  </select>
+
+  <label for="year">Year of Study:</label>
+  <select id="year" required>
+    <option value="" disabled selected>Choose Year</option>
+    <option value="1">1st Year</option>
+    <option value="2">2nd Year</option>
+    <option value="3">3rd Year</option>
+    <option value="4">4th Year</option>
+  </select>
+
+  <button type="submit">Show Fees Details</button>
+</form>
+
+<div id="feesDetails" class="fees-container" style="display:none;">
+  <h2>Fees Details for <span id="studentNameDisplay"></span></h2>
+  <div class="fee-row tuition">
+    <span>Tuition Fee</span>
+    <span id="tuitionFee"></span>
+  </div>
+  <div class="fee-row hostel">
+    <span>Hostel Fee</span>
+    <span id="hostelFee"></span>
+  </div>
+  <div class="fee-row transport">
+    <span>Transport Fee</span>
+    <span id="transportFee"></span>
+  </div>
+  <div class="fee-row misc">
+    <span>Miscellaneous</span>
+    <span id="miscFee"></span>
+  </div>
+  <div class="fee-row total">
+    <span>Total Fee</span>
+    <span id="totalFee"></span>
+  </div>
+</div>
+
+<script>
+  // Sample fees data by course and year
+  const feesData = {
+    btech: {
+      1: { tuition: 60000, hostel: 25000, transport: 5000, misc: 3000 },
+      2: { tuition: 60000, hostel: 25000, transport: 5000, misc: 3000 },
+      3: { tuition: 65000, hostel: 26000, transport: 5500, misc: 3500 },
+      4: { tuition: 65000, hostel: 26000, transport: 5500, misc: 3500 }
+    },
+    mba: {
+      1: { tuition: 75000, hostel: 30000, transport: 6000, misc: 4000 },
+      2: { tuition: 75000, hostel: 30000, transport: 6000, misc: 4000 },
+      3: { tuition: 0, hostel: 0, transport: 0, misc: 0 }, // MBA usually 2 years
+      4: { tuition: 0, hostel: 0, transport: 0, misc: 0 }
+    },
+    mca: {
+      1: { tuition: 50000, hostel: 22000, transport: 4000, misc: 2500 },
+      2: { tuition: 50000, hostel: 22000, transport: 4000, misc: 2500 },
+      3: { tuition: 52000, hostel: 23000, transport: 4200, misc: 2800 },
+      4: { tuition: 0, hostel: 0, transport: 0, misc: 0 } // MCA usually 3 years
+    }
+  };
+
+  document.getElementById('studentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('studentName').value.trim();
+    const course = document.getElementById('course').value;
+    const year = document.getElementById('year').value;
+
+    // Check if fees data exists for the selected course/year
+    const fees = feesData[course][year];
+    if(!fees || (fees.tuition === 0 && fees.hostel === 0)) {
+      alert("No fees data available for this course/year.");
+      return;
+    }
+
+    const total = fees.tuition + fees.hostel + fees.transport + fees.misc;
+
+    // Update the UI
+    document.getElementById('studentNameDisplay').textContent = name;
+    document.getElementById('tuitionFee').textContent = `₹${fees.tuition.toLocaleString()}`;
+    document.getElementById('hostelFee').textContent = `₹${fees.hostel.toLocaleString()}`;
+    document.getElementById('transportFee').textContent = `₹${fees.transport.toLocaleString()}`;
+    document.getElementById('miscFee').textContent = `₹${fees.misc.toLocaleString()}`;
+    document.getElementById('totalFee').textContent = `₹${total.toLocaleString()}`;
+
+    document.getElementById('feesDetails').style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
